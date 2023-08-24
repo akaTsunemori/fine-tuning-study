@@ -2,7 +2,7 @@ import torch
 import torchvision
 import torch.nn.init
 
-class InceptionV3Class:
+class InceptionV3:
     def __init__(self, lr, weight_decay) -> None:
         self.net = self.__get_net()
         self.optimizer = self.__get_optimizer(lr, weight_decay)

@@ -60,17 +60,6 @@ def organize_test_dataset(root):
                 copy_file(source_directory, destination_directory, entry.name)
 
 
-def get_net(model: str = 'resnet34'):
-    model = eval(f'torchvision.models.{model}(pretrained=True)')
-    # model.fc = torch.nn.Linear(model.fc.in_features, 10)
-    # torch.nn.init.xavier_uniform_(model.fc.weight)
-    return model
-    # resnet = torchvision.models.resnet34(pretrained=True)
-    # Substitute the FC output layer
-    # resnet.fc = torch.nn.Linear(resnet.fc.in_features, 10)
-    # torch.nn.init.xavier_uniform_(resnet.fc.weight)
-    # return resnet
-
 
 def train(net, train_dataloader, valid_dataloader, criterion, optimizer, scheduler=None, epochs=10, device='cpu', checkpoint_epochs=10):
     start = time.time()
@@ -138,14 +127,37 @@ def train(net, train_dataloader, valid_dataloader, criterion, optimizer, schedul
     return net
 
 
+def get_predictions(net, optimizer, epochs):
+    net = train(net, train_dataloader, valid_dataloader,
+                criterion, optimizer, None, epochs, device)
+    net = train(net, train_valid_dataloader, None,
+                criterion, optimizer, None, epochs, device)
+    preds = []
+    net.eval()
+    with torch.no_grad():
+        for X, _ in test_dataloader:
+            X = X.to(device)
+            preds.extend(net(X).argmax(dim=1).type(torch.int32).cpu().numpy())
+    ids = list(range(1, len(test_dataset)+1))
+    ids.sort(key=lambda x: str(x))
+    df = pd.DataFrame({'id': ids, 'label': preds})
+    df['label'] = df['label'].apply(lambda x: train_dataset.classes[x])
+    # df.to_csv('submission.csv', index=False)
+    return df['label']
 
+
+def get_valid():
+    resnet34 = pd.read_csv('./resnet34.csv')
+    return resnet34['label']
 
 
 root = Path('./data')
 input_path = Path('./cifar-10')
 # Read in the labels DataFrame with a label for each image
+print('Reading trainLabels.csv')
 labels = pd.read_csv(root/'trainLabels.csv')
 # Create the train/train_valid/valid folder structure
+print('Organizing datasets')
 valid_probability = 0.1
 organize_train_valid_dataset(root, labels, valid_probability)
 # Create the test folder structure
@@ -195,68 +207,4 @@ test_dataloader = torch.utils.data.DataLoader(
     test_dataset, batch_size=256, shuffle=False, num_workers=2*num_gpus, pin_memory=True)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-lr, weight_decay, epochs = 1e-5, 5e-4, 3
 criterion = torch.nn.CrossEntropyLoss()
-
-
-# from models.ResNet34 import ResNet34
-# resnet34 = ResNet34(lr, weight_decay)
-# net = resnet34.net
-# optimizer = resnet34.optimizer
-
-
-# from models.AlexNet import AlexNet
-# alexnet = AlexNet(lr, weight_decay)
-# net = alexnet.net.to(device)
-# optimizer = alexnet.optimizer
-
-
-# from models.WideResNet import WideResNet
-# wideresnet = WideResNet(lr, weight_decay)
-# net = wideresnet.net
-# optimizer = wideresnet.optimizer
-
-
-# from models.VGG import VGG
-# vgg = VGG(lr, weight_decay)
-# net = vgg.net
-# optimizer = vgg.optimizer
-
-
-# from models.SqueezeNet import SqueezeNet
-# squeezenet = SqueezeNet(lr, weight_decay)
-# net = squeezenet.net
-# optimizer = squeezenet.optimizer
-
-
-# from models.GoogLeNet import GoogLeNet
-# googlenet = GoogLeNet(lr, weight_decay)
-# net = googlenet.net
-# optimizer = googlenet.optimizer
-
-
-from models.DenseNet import DenseNet
-densenet = DenseNet(lr, weight_decay)
-net = densenet.net
-optimizer = densenet.optimizer
-
-
-net = train(net, train_dataloader, valid_dataloader,
-            criterion, optimizer, None, epochs, device)
-
-net = train(net, train_valid_dataloader, None,
-            criterion, optimizer, None, epochs, device)
-
-preds = []
-net.eval()
-with torch.no_grad():
-    for X, _ in test_dataloader:
-        X = X.to(device)
-        preds.extend(net(X).argmax(dim=1).type(torch.int32).cpu().numpy())
-
-ids = list(range(1, len(test_dataset)+1))
-ids.sort(key=lambda x: str(x))
-
-df = pd.DataFrame({'id': ids, 'label': preds})
-df['label'] = df['label'].apply(lambda x: train_dataset.classes[x])
-df.to_csv('submission.csv', index=False)
