@@ -9,7 +9,6 @@ from models.InceptionV3 import InceptionV3
 from models.MNASNet import MNASNet
 from models.MobileNetV2 import MobileNetV2
 from models.ResNet34 import ResNet34
-from models.ResNet34 import ResNet34
 from models.ResNeXt import ResNeXt
 from models.ShuffleNetV2 import ShuffleNetV2
 from models.SqueezeNet import SqueezeNet

@@ -1,0 +1,25 @@
+from os import listdir, mkdir
+from os.path import exists
+from random import choice
+from shutil import move
+
+
+source  = './data/valid'
+destiny = './data/test_new'
+
+if not exists(destiny):
+    mkdir(destiny)
+
+for folder in listdir(source):
+    print(folder)
+    if not exists(f'{destiny}/{folder}'):
+        mkdir(f'{destiny}/{folder}')
+    files = listdir(f'{source}/{folder}')
+    count = len(files)
+    to_move = list({choice(files) for _ in range(int(count * 0.05))})
+    # print(all(exists(f'{source}/{folder}/{file}') for file in to_move))
+    path_from = f'{source}/{folder}'
+    path_to   = f'{destiny}/{folder}'
+    for file in to_move:
+        move(f'{path_from}/{file}', f'{path_to}/{file}')
+

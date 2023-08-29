@@ -6,6 +6,11 @@ import pandas as pd
 import torchvision
 import torch
 import time
+import warnings
+
+
+# Ignore warning messages for a clean output
+warnings.filterwarnings('ignore')
 
 
 def copy_file(source_directory, destination_directory, filename):
@@ -156,12 +161,15 @@ input_path = Path('./cifar-10')
 # Read in the labels DataFrame with a label for each image
 print('Reading trainLabels.csv')
 labels = pd.read_csv(root/'trainLabels.csv')
+
+print('Organazing datasets\' folder structures')
 # Create the train/train_valid/valid folder structure
-print('Organizing datasets')
 valid_probability = 0.1
 organize_train_valid_dataset(root, labels, valid_probability)
 # Create the test folder structure
 organize_test_dataset(root)
+
+print('Loading datasets')
 train_dataset = torchvision.datasets.ImageFolder(
     root/'train',
     transform=torchvision.transforms.Compose([
@@ -187,15 +195,15 @@ train_transforms = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize(mean, stdev)
 ])
-train_dataset, train_valid_dataset = [
-    torchvision.datasets.ImageFolder(folder, transform=train_transforms) for folder in [root/'train', root/'train_valid']]
+train_dataset, train_valid_dataset = [torchvision.datasets.ImageFolder
+    (folder, transform=train_transforms) for folder in [root/'train', root/'train_valid']]
 valid_transforms = torchvision.transforms.Compose([
     torchvision.transforms.Resize((224, 224)),
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize(mean, stdev)
 ])
-valid_dataset, test_dataset = [torchvision.datasets.ImageFolder(
-    folder, transform=valid_transforms) for folder in [root/'valid', root/'test']]
+valid_dataset, test_dataset = [torchvision.datasets.ImageFolder
+    (folder, transform=valid_transforms) for folder in [root/'valid', root/'test']]
 num_gpus = torch.cuda.device_count()
 train_dataloader = torch.utils.data.DataLoader(
     train_dataset, batch_size=128, shuffle=True, num_workers=2*num_gpus, pin_memory=True)

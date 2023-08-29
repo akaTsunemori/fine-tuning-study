@@ -2,6 +2,7 @@ import torch
 import torchvision
 import torch.nn.init
 
+
 class ShuffleNetV2:
     def __init__(self, lr, weight_decay) -> None:
         self.net = self.__get_net()
