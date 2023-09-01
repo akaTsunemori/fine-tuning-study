@@ -17,7 +17,7 @@ def fix_dataset():
             mkdir(f'{destiny}/{folder}')
         files = listdir(f'{source}/{folder}')
         count = len(files)
-        to_move = sample(files, int(count * 0.8))
+        to_move = sample(files, int(count * 0.5))
         # to_move = list({choice(files) for _ in range(int(count * 0.05))})
         # print(all(exists(f'{source}/{folder}/{file}') for file in to_move))
         path_from = f'{source}/{folder}'
