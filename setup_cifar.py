@@ -1,7 +1,7 @@
-from os import listdir, mkdir, rmdir, rename
+from os import listdir, mkdir, rename
 from os.path import exists
 from random import choice
-from shutil import move
+from shutil import move, rmtree
 
 
 source  = './data/valid'
@@ -23,7 +23,7 @@ for folder in listdir(source):
     for file in to_move:
         move(f'{path_from}/{file}', f'{path_to}/{file}')
 
-rmdir('./data/original_train')
-rmdir('./data/original_test')
-rmdir('./data/test')
+rmtree('./data/original_train')
+rmtree('./data/original_test')
+rmtree('./data/test')
 rename('./data/test_new', './data/test')
