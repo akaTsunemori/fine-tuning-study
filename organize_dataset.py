@@ -57,11 +57,12 @@ def organize_test_dataset(root):
                 copy_file(source_directory, destination_directory, entry.name)
 
 
-root = Path('./data')
-input_path = Path('./cifar-10')
-print('Reading trainLabels.csv')
-labels = pd.read_csv(root/'trainLabels.csv')
-print('Organazing datasets\' folder structures')
-valid_probability = 0.1
-organize_train_valid_dataset(root, labels, valid_probability)
-organize_test_dataset(root)
+def organize_dataset():
+    root = Path('./data')
+    input_path = Path('./cifar-10')
+    print('Reading trainLabels.csv')
+    labels = pd.read_csv(root/'trainLabels.csv')
+    print('Organazing datasets\' folder structures')
+    valid_probability = 0.1
+    organize_train_valid_dataset(root, labels, valid_probability)
+    organize_test_dataset(root)
