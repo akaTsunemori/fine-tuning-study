@@ -1,5 +1,4 @@
 import argparse
-from os.path import exists
 from sklearn.metrics import classification_report
 
 from models.AlexNet import AlexNet
@@ -16,10 +15,6 @@ from models.VGG import VGG
 from models.WideResNet import WideResNet
 from fine_tuning import get_predictions
 from fine_tuning import get_valid
-
-from extract import extract
-from organize_dataset import organize_dataset
-from fix_dataset import fix_dataset
 
 
 def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) -> None:
@@ -68,10 +63,6 @@ def get_args():
 
 
 def main(args) -> None:
-    if not exists('./data'):
-        extract()
-        organize_dataset()
-        fix_dataset()
     epochs = 20
     lr = 1e-5
     weight_decay = 5e-4
