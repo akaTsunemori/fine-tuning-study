@@ -1,4 +1,4 @@
-import sys
+import argparse
 from sklearn.metrics import classification_report
 
 
@@ -18,7 +18,7 @@ from fine_tuning import get_predictions
 from fine_tuning import get_valid
 
 
-def train_model(model_name: str, epochs: int = 20, lr: float = 1e-5, weight_decay: float = 5e-4) -> None:
+def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) -> None:
     if model_name == 'AlexNet':
         model = AlexNet(lr, weight_decay)
     elif model_name == 'DenseNet':
@@ -54,17 +54,31 @@ def train_model(model_name: str, epochs: int = 20, lr: float = 1e-5, weight_deca
     print(report)
 
 
-def main() -> None:
-    # args = sys.argv[1:]
-    # if '--help' in args:
-    #     pass
-    # if '--epochs' in args:
-    #     pass
-    # if '--model' in args:
-    #     pass
-    # print(args)
-    train_model(model_name='AlexNet', epochs=1)
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str)
+    parser.add_argument('--epochs', type=int)
+    parser.add_argument('--lr', type=float)
+    parser.add_argument('--weight_decay', type=float)
+    return parser.parse_args()
+
+
+def main(args) -> None:
+    epochs = 20
+    lr = 1e-5
+    weight_decay = 5e-4
+    model_name = 'AlexNet'
+    if args.epochs:
+        epochs = args.epochs
+    if args.lr:
+        lr = args.lr
+    if args.model:
+        model_name = args.model
+    if args.weight_decay:
+        weight_decay = args.weight_decay
+    train_model(
+        model_name=model_name, epochs=epochs, lr=lr, weight_decay=weight_decay)
 
 
 if __name__ == '__main__':
-    main()
+    main(get_args())
