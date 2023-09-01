@@ -97,8 +97,17 @@ def get_predictions(net, optimizer, epochs):
 
 
 def get_valid():
-    resnet34 = pd.read_csv('./resnet34.csv')
-    return resnet34['label']
+    data = []
+    for batch in test_dataloader:
+        images, labels = batch
+        data.extend(zip(images, labels))
+    data_dict = {"id": [], "label": []}
+    for idx, (_, label) in enumerate(data, start=1):
+        data_dict["id"].append(idx)
+        data_dict["label"].append(label)
+    df = pd.DataFrame(data_dict)
+    df['label'] = df['label'].apply(lambda x: train_dataset.classes[x])
+    return df['label']
 
 
 root = Path('./data')
