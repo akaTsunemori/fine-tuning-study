@@ -77,6 +77,7 @@ def train(net, train_dataloader, valid_dataloader, criterion, optimizer, schedul
 
 
 def get_predictions(net, optimizer, epochs):
+    net = net.to(device)
     net = train(net, train_dataloader, valid_dataloader,
                 criterion, optimizer, None, epochs, device)
     # The original code was training with the validation dataset.
