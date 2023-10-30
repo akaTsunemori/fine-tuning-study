@@ -1,6 +1,7 @@
 import argparse
 from sklearn.metrics import classification_report
 
+# Project modules
 from models.AlexNet import AlexNet
 from models.DenseNet import DenseNet
 from models.GoogLeNet import GoogLeNet
@@ -13,37 +14,27 @@ from models.ShuffleNetV2 import ShuffleNetV2
 from models.SqueezeNet import SqueezeNet
 from models.VGG import VGG
 from models.WideResNet import WideResNet
-from fine_tuning import get_predictions
-from fine_tuning import get_valid
+from utils.fine_tuning import get_predictions
+from utils.fine_tuning import get_valid
+from utils.dataset_setup import dataset_setup
 
 
 def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) -> None:
-    if model_name == 'AlexNet':
-        model = AlexNet(lr, weight_decay)
-    elif model_name == 'DenseNet':
-        model = DenseNet(lr, weight_decay)
-    elif model_name == 'GoogLeNet':
-        model = GoogLeNet(lr, weight_decay)
-    elif model_name == 'InceptionV3':
-        model = InceptionV3(lr, weight_decay)
-    elif model_name == 'MNASNet':
-        model = MNASNet(lr, weight_decay)
-    elif model_name == 'MobileNetV2':
-        model = MobileNetV2(lr, weight_decay)
-    elif model_name == 'ResNet34':
-        model = ResNet34(lr, weight_decay)
-    elif model_name == 'ResNeXt':
-        model = ResNeXt(lr, weight_decay)
-    elif model_name == 'ShuffleNetV2':
-        model = ShuffleNetV2(lr, weight_decay)
-    elif model_name == 'SqueezeNet':
-        model = SqueezeNet(lr, weight_decay)
-    elif model_name == 'VGG':
-        model = VGG(lr, weight_decay)
-    elif model_name == 'WideResNet':
-        model = WideResNet(lr, weight_decay)
-    else:
-        raise Exception('Model not found!')
+    models = {
+        'AlexNet': AlexNet,
+        'DenseNet': DenseNet,
+        'GoogLeNet': GoogLeNet,
+        'InceptionV3': InceptionV3,
+        'MNASNet': MNASNet,
+        'MobileNetV2': MobileNetV2,
+        'ResNet34': ResNet34,
+        'ResNeXt': ResNeXt,
+        'ShuffleNetV2': ShuffleNetV2,
+        'SqueezeNet': SqueezeNet,
+        'VGG': VGG,
+        'WideResNet': WideResNet
+    }
+    model = models[model_name](lr, weight_decay)
     net = model.net
     optimizer = model.optimizer
     valid = get_valid()
@@ -55,28 +46,20 @@ def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) ->
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str)
-    parser.add_argument('--epochs', type=int)
-    parser.add_argument('--lr', type=float)
-    parser.add_argument('--weight_decay', type=float)
+    parser.add_argument('--model', type=str, default='ResNet34')
+    parser.add_argument('--epochs', type=int, default=20)
+    parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--weight_decay', type=float, default=5e-4)
     return parser.parse_args()
 
 
 def main(args) -> None:
-    epochs = 20
-    lr = 1e-5
-    weight_decay = 5e-4
-    model_name = 'AlexNet'
-    if args.epochs:
-        epochs = args.epochs
-    if args.lr:
-        lr = args.lr
-    if args.model:
-        model_name = args.model
-    if args.weight_decay:
-        weight_decay = args.weight_decay
+    dataset_setup()
     train_model(
-        model_name=model_name, epochs=epochs, lr=lr, weight_decay=weight_decay)
+        model_name=args.model_name, 
+        epochs=args.epochs, 
+        lr=args.lr, 
+        weight_decay=args.weight_decay)
 
 
 if __name__ == '__main__':
