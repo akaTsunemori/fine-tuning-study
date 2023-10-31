@@ -1,11 +1,11 @@
 from os.path import exists
 
-from extract import extract
-from organize_dataset import organize_dataset
-from fix_dataset import fix_dataset
+from utils.extract import extract
+from utils.organize_dataset import organize_dataset
+from utils.split_dataset import split_dataset
 
 
 if not exists('./data'):
     extract()
     organize_dataset()
-    fix_dataset()
+    split_dataset()
