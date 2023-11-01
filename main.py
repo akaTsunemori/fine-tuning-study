@@ -15,6 +15,7 @@ from models.SqueezeNet import SqueezeNet
 from models.VGG import VGG
 from models.WideResNet import WideResNet
 from utils.fine_tuning import FineTuning
+from utils.dataset_setup import dataset_setup
 
 
 def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) -> None:
@@ -54,6 +55,7 @@ def get_args():
 
 
 def main(args) -> None:
+    dataset_setup()
     train_model(
         model_name=args.model,
         epochs=args.epochs,
