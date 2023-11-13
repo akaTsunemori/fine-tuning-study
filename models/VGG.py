@@ -16,10 +16,5 @@ class VGG:
         return vgg
 
     def __get_optimizer(self, lr, weight_decay):
-        params_1x = [param for name, param in self.net.named_parameters() if 'classifier' not in str(name)]
-        optimizer = torch.optim.Adam(
-            [{'params': params_1x},
-             {'params': self.net.classifier.parameters(), 'lr': lr * 10}],
-            lr=lr,
-            weight_decay=weight_decay)
+        optimizer = torch.optim.Adam(self.net.parameters(), lr=lr, weight_decay=weight_decay)
         return optimizer
