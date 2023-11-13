@@ -43,6 +43,7 @@ class FineTuning:
             (folder, transform=valid_transforms) for folder in [root/'valid', root/'test']]
         num_gpus = torch.cuda.device_count()
         self.train_dataset = train_dataset
+        self.test_dataset = test_dataset
         self.train_dataloader = torch.utils.data.DataLoader(
             train_dataset, batch_size=128, shuffle=True, num_workers=2*num_gpus, pin_memory=True)
         self.valid_dataloader = torch.utils.data.DataLoader(
@@ -118,14 +119,19 @@ class FineTuning:
         device = self.device
         net = self.__train()
         test_dataloader = self.test_dataloader
+        train_dataset = self.train_dataset
+        test_dataset = self.test_dataset
         preds = []
         net.eval()
         with torch.no_grad():
             for X, _ in test_dataloader:
                 X = X.to(device)
-                preds.extend(
-                    net(X).argmax(dim=1).type(torch.int32).cpu().numpy())
-        return preds
+                preds.extend(net(X).argmax(dim=1).type(torch.int32).cpu().numpy())
+        ids = list(range(1, len(test_dataset)+1))
+        ids.sort(key=lambda x: str(x))
+        df = pd.DataFrame({'id': ids, 'label': preds})
+        df['label'] = df['label'].apply(lambda x: train_dataset.classes[x])
+        return df['label']
 
 
     def get_target_labels(self):
