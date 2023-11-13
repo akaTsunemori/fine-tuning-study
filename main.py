@@ -14,8 +14,8 @@ from models.ShuffleNetV2 import ShuffleNetV2
 from models.SqueezeNet import SqueezeNet
 from models.VGG import VGG
 from models.WideResNet import WideResNet
-from utils.fine_tuning import get_predictions
-from utils.fine_tuning import get_valid
+from utils.fine_tuning import FineTuning
+from utils.dataset_setup import dataset_setup
 
 
 def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) -> None:
@@ -36,11 +36,13 @@ def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) ->
     model = models[model_name](lr, weight_decay)
     net = model.net
     optimizer = model.optimizer
-    valid = get_valid()
-    preds = get_predictions(net, optimizer, epochs)
-    print('Calculating classification report')
-    report = classification_report(valid, preds)
+    fine_tuning = FineTuning(net, optimizer, epochs)
+    target = fine_tuning.get_target_labels()
+    preds = fine_tuning.get_predictions()
+    print('Computing classification report')
+    report = classification_report(target, preds, output_dict=True)
     print(report)
+    return report
 
 
 def get_args():
@@ -53,6 +55,7 @@ def get_args():
 
 
 def main(args) -> None:
+    dataset_setup()
     train_model(
         model_name=args.model,
         epochs=args.epochs,
