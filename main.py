@@ -48,8 +48,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--models',
-        type=str, 
-        default='ResNet34', 
+        default=['ResNet34'], 
         choices=models.keys(),
         nargs='*')
     parser.add_argument('--epochs', type=int, default=20)
