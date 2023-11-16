@@ -23,7 +23,6 @@ def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) ->
         'AlexNet': AlexNet,
         'DenseNet': DenseNet,
         'GoogLeNet': GoogLeNet,
-        'InceptionV3': InceptionV3,
         'MNASNet': MNASNet,
         'MobileNetV2': MobileNetV2,
         'ResNet34': ResNet34,
