@@ -5,7 +5,6 @@ from sklearn.metrics import classification_report
 from models.AlexNet import AlexNet
 from models.DenseNet import DenseNet
 from models.GoogLeNet import GoogLeNet
-from models.InceptionV3 import InceptionV3
 from models.MNASNet import MNASNet
 from models.MobileNetV2 import MobileNetV2
 from models.ResNet34 import ResNet34
@@ -16,6 +15,7 @@ from models.VGG import VGG
 from models.WideResNet import WideResNet
 from utils.fine_tuning import FineTuning
 from utils.dataset_setup import dataset_setup
+
 
 
 def train_model(model_name: str, epochs: int, lr: float, weight_decay: float) -> None:
